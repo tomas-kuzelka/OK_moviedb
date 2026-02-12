@@ -59,7 +59,7 @@ public class PersonsController(IPersonService personService) : ControllerBase
 
     [HttpPut("{id}")]
     public async Task<ActionResult<PersonResponse>> UpdateAsync(
-        [FromQuery] int id,
+        int id,
         [FromBody] CreatePersonRequest request,
         CancellationToken ct = default)
     {
@@ -75,7 +75,7 @@ public class PersonsController(IPersonService personService) : ControllerBase
     }
 
 
-    [HttpDelete]
+    [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteAsync(int id, CancellationToken ct = default)
     {
         await personService.DeleteAsync(id, ct);
