@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using MovieDatabase.Application.Interfaces;
 using MovieDatabase.Application.Interfaces.Repositories;
 using MovieDatabase.Application.Interfaces.Services;
 using MovieDatabase.Application.Mappings;
@@ -17,8 +18,8 @@ builder.Services.AddDbContext<MoviesDbContext>(options =>
 builder.Services.AddScoped<IMovieRepository, MovieRepository>();
 builder.Services.AddScoped<IPersonRepository, PersonRepository>();
 builder.Services.AddScoped<IGenreRepository, GenreRepository>();
-
 builder.Services.AddScoped<IPersonService, PersonService>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {

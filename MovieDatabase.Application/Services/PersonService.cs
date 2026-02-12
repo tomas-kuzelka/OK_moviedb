@@ -1,6 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using Microsoft.EntityFrameworkCore;
+using MovieDatabase.Application.DTOs.Common;
 using MovieDatabase.Application.DTOs.Movie;
 using MovieDatabase.Application.DTOs.Person;
+using MovieDatabase.Application.Interfaces;
 using MovieDatabase.Application.Interfaces.Repositories;
 using MovieDatabase.Application.Interfaces.Services;
 using MovieDatabase.Domain.Entities;
@@ -10,102 +14,66 @@ using System.Text;
 
 namespace MovieDatabase.Application.Services;
 
-public class PersonService(
-    IPersonRepository personRepository,
-    IMovieRepository movieRepository
-    ) : IPersonService
+public class PersonService(IUnitOfWork unitOfWork, IMapper mapper) : IPersonService
 {
-    public Task<IEnumerable<PersonResponse>> GetAllAsync(CancellationToken ct = default)
+
+    public async Task<PageResult<PersonResponse>> GetAllAsync(int pageNumber = 1, int pageSize = 10, CancellationToken ct = default)
     {
-        var query = personRepository.GetQueryable();
+        var query = unitOfWork.PersonRepository.GetQueryable()
+            .ProjectTo<PersonResponse>(mapper.ConfigurationProvider);
 
-        query = query
-            .Include(p => p.MoviesAsActor)
-            .Include(p => p.MoviesAsDirector);
+        var totalItems = await query.CountAsync(ct);
 
-        var entities = query.ToList();
+        var items = await query
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(ct);
 
-        return Task.FromResult(entities.Select(MapToResponse));
+        return new PageResult<PersonResponse>(items, pageNumber, pageSize, totalItems);
     }
 
-    public async Task<PersonResponse> GetByIdAsync(int id, CancellationToken ct = default)
-    {
-        var entity = await personRepository
-            .GetQueryable()
-            .Include(p => p.MoviesAsActor)
-            .Include(p => p.MoviesAsDirector)
-            .FirstOrDefaultAsync(p => p.Id == id);
-        if (entity == null) return null;
 
-        return MapToResponse(entity);
+    public async Task<PageResult<PersonResponse>> GetAllPersonsAsync(PersonRole personRole, int pageNumber = 1, int pageSize = 10, CancellationToken ct = default)
+    {
+        var query = unitOfWork.PersonRepository.GetQueryable()
+            .Where(p => p.Role == personRole)
+            .OrderBy(p => p.Name)
+            .ProjectTo<PersonResponse>(mapper.ConfigurationProvider);
+
+        var totalItems = await query.CountAsync(ct);
+
+        var items = await query
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(ct);
+        return new PageResult<PersonResponse>(items, pageNumber, pageSize, totalItems);
     }
+   
     public async Task<PersonResponse> CreateAsync(CreatePersonRequest dto, CancellationToken ct = default)
     {
-        var entity = new Person
-        {
-            Name = dto.Name,
-            BirthDate = dto.BirthDate,
-            Country = dto.Country,
-            Biography = dto.Biography,
-            Role = dto.Role,
-            Address = new Address(dto.Address.Street, dto.Address.City, dto.Address.Zip)
-        };
-        
+       var entity = mapper.Map<Person>(dto);
+
+        // namapovat filmy (Actors)
         if (dto.MoviesAsActor.Count > 0)
         {
-            var movies = await movieRepository.GetQueryable()
-                .Where(m => dto.MoviesAsActor.Contains(m.Id)).ToListAsync();
+            var movies = await unitOfWork.MoviRepository.GetQueryable()
+                .Where(m => dto.MoviesAsActor.Contains(m.Id))
+                .ToListAsync(ct);
             entity.MoviesAsActor = movies;
         }
 
-        await personRepository.AddAsync(entity, ct);
-        await personRepository.SaveChangesAsync(ct);
-
-        return MapToResponse(entity);
-    }
-
-
-    public async Task UpdateAsync(int id, CreatePersonRequest dto, CancellationToken ct = default)
-    {
-        var entity = await personRepository.GetByIdAsync(id, ct);
-
-        if (entity == null) throw new KeyNotFoundException($"Person with id {id} not found");
-
-        entity.Name = dto.Name;
-        entity.BirthDate = dto.BirthDate;
-        entity.Biography = dto.Biography;
-        entity.Role = dto.Role;
-        entity.Country = dto.Country;
-
-        entity.Address = new Address(dto.Address.Street, dto.Address.City, dto.Address.Zip);
-
-        await personRepository.SaveChangesAsync(ct);
-
-    }
-
-    public async Task DeleteAsync(int id, CancellationToken ct = default)
-    {
-        var entity = await personRepository.GetByIdAsync(id, ct);
-        if (entity != null)
+        // namapovat filmy (Directors)
+        if (dto.MoviesAsDirector.Count > 0)
         {
-            personRepository.Delete(entity);
-            await personRepository.SaveChangesAsync(ct);
+            var movies = await unitOfWork.MoviRepository.GetQueryable()
+                .Where(m => dto.MoviesAsDirector.Contains(m.Id))
+                .ToListAsync(ct);
+            entity.MoviesAsDirector = movies;
         }
-    }
 
-    private PersonResponse MapToResponse(Person entity)
-    {
-        return new PersonResponse
-        {
-            Id = entity.Id,
-            Name = entity.Name,
-            BirthDate = entity.BirthDate,
-            Country = entity.Country,
-            Address = new AddressDTO(entity.Address.Street, entity.Address.City, entity.Address.Zip),
-            Role = entity.Role,
-            Biography = entity.Biography,
-            MoviesAsActor = entity.MoviesAsActor.Select(m => new MovieSummaryDTO(m.Title, m.ReleaseDate, m.IsAvailable)).ToList(),
-            MoviesAsDirector = entity.MoviesAsDirector.Select(m => new MovieSummaryDTO(m.Title, m.ReleaseDate, m.IsAvailable)).ToList()
-        };
+        await unitOfWork.PersonRepository.AddAsync(entity, ct);
+        await unitOfWork.CommitAsync(ct);
+
+        return mapper.Map<PersonResponse>(entity);
     }
 }
