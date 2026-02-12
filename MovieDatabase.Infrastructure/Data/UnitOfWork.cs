@@ -23,7 +23,7 @@ public class UnitOfWork : IUnitOfWork
     }
 
     // ??= (null-coalescing assignment): pokud se někdo zeptá na MovieRepository a _movieRepository bude null, tak se vytvoří nová instanace
-    public IMovieRepository MoviRepository => _movieRepository ??= new MovieRepository(_context);
+    public IMovieRepository MovieRepository => _movieRepository ??= new MovieRepository(_context);
     public IPersonRepository PersonRepository => _personRepository ??= new PersonRepository(_context);
     public IGenreRepository GenreRepository => _genreRepository ??= new GenreRepository(_context);
 

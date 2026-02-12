@@ -8,7 +8,7 @@ namespace MovieDatabase.Application.Interfaces;
 
 public interface IUnitOfWork : IDisposable
 {
-    IMovieRepository MoviRepository { get; }
+    IMovieRepository MovieRepository { get; }
     IPersonRepository PersonRepository { get; }
     IGenreRepository GenreRepository { get; }
 
