@@ -1,0 +1,11 @@
+@host = http://localhost:5066
+@contentType = application/json
+
+### GetAll
+GET http://localhost:5066/api/persons
+
+
+### Získat konkrétní osobu
+
+
+GET http://localhost:5066/
