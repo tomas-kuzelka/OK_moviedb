@@ -21,7 +21,7 @@ public record CreateMovieRequest : IValidatableObject
     public bool IsAvailable { get; set; }
     [Display(Name = "Režisér", Description = "Jméno režiséra filmu")]
     [Required(ErrorMessage = "{0} je povinné.")]
-    public string DirectorName { get; set; } = string.Empty;
+    public int? DirectorId { get; set; }
 
     public DateOnly AvailableFrom { get; set; }
     public IList<int> GenreIds { get; set; } = [];

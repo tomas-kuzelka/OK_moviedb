@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using MovieDatabase.Application.Interfaces.Repositories;
 using MovieDatabase.Application.Interfaces.Services;
+using MovieDatabase.Application.Mappings;
 using MovieDatabase.Application.Services;
 using MovieDatabase.Infrastructure.Data;
 using MovieDatabase.Infrastructure.Repositories;
@@ -22,6 +23,11 @@ builder.Services.AddScoped<IPersonService, PersonService>();
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
+
+builder.Services.AddAutoMapper(options =>
+{
+    options.AddProfile<MappingProfile>();
 });
 
 var app = builder.Build();

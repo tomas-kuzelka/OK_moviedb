@@ -10,7 +10,7 @@ public record PersonSummaryDTO
     string? Name,
     DateOnly BirthDate,
     string? Country,
-    Address Address,
+    AddressDTO Address,
     PersonRole Role ,
     string? Biography 
 );

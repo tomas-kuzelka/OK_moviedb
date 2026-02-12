@@ -6,7 +6,7 @@ namespace MovieDatabase.Application.DTOs.Movie;
 
 public record MovieSummaryDTO
 (
-     string? Title,
+     string Title,
      int ReleaseDate,
      bool IsAvailable
 
