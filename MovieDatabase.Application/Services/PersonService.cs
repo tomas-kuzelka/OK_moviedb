@@ -90,7 +90,8 @@ public class PersonService(IUnitOfWork unitOfWork, IMapper mapper) : IPersonServ
     {
         var entity = await unitOfWork.PersonRepository.GetWithMoviesAsync(id, ct);
 
-        if (entity is null) return null;
+        if (entity is null)
+            throw new KeyNotFoundException($"Person with id {id} not found");
 
         mapper.Map(dto, entity);
 

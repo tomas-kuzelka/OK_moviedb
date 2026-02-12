@@ -42,7 +42,8 @@ app.UseHttpsRedirection();
 app.MapOpenApi();
 app.MapScalarApiReference(options =>
 {
-    
+    options.WithTheme(ScalarTheme.Mars);
+
 });
 
 app.MapControllers();

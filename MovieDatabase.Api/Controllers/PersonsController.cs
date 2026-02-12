@@ -22,6 +22,14 @@ public class PersonsController(IPersonService personService) : ControllerBase
         return Ok(await personService.GetAllAsync(pageNumber, pageSize, ct));
     }
 
+    [HttpGet("{id}")]
+    public async Task<ActionResult<PersonResponse>> GetById(int id, CancellationToken ct = default)
+    {
+        var result = await personService.GetByIdAsync(id, ct);
+        if (result is null) return NotFound();
+        return Ok(result);
+    }
+
     [HttpGet("actors")]
     public async Task<ActionResult<PageResult<PersonResponse>>> GetAllActorsAsync(
         [FromQuery] int pageNumber = 1,
@@ -46,6 +54,31 @@ public class PersonsController(IPersonService personService) : ControllerBase
     public async Task<ActionResult<PersonResponse>> Create([FromBody] CreatePersonRequest personRequest, CancellationToken ct = default)
     {
         var result = await personService.CreateAsync(personRequest, ct);
-        return Ok(result);
+        return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<ActionResult<PersonResponse>> UpdateAsync(
+        [FromQuery] int id,
+        [FromBody] CreatePersonRequest request,
+        CancellationToken ct = default)
+    {
+        try
+        {
+            var result = await personService.UpdateAsync(id, request, ct);
+            return Ok(result);
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
+    }
+
+
+    [HttpDelete]
+    public async Task<IActionResult> DeleteAsync(int id, CancellationToken ct = default)
+    {
+        await personService.DeleteAsync(id, ct);
+        return NoContent();
     }
 }
