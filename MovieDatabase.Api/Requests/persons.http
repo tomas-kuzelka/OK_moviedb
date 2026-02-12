@@ -2,10 +2,31 @@
 @contentType = application/json
 
 ### GetAll
-GET http://localhost:5066/api/persons
+GET https://localhost:5066/api/persons
 
-
-### Získat konkrétní osobu
-
-
+### Create Person
 GET http://localhost:5066/
+
+POST {{host}}/api/persons
+Content-Type: {{contentType}}
+
+{
+  "name": "",
+  "birthDate": "",
+  "address": {
+    "street": null,
+    "city": null,
+    "zip": null
+  },
+  "country": "",
+  "role": 1,
+  "biography": "",
+  "moviesAsActor": [
+    1
+  ],
+  "moviesAsDirector": [
+    1
+  ]
+}
+
+### Get Person

@@ -6,6 +6,7 @@ using MovieDatabase.Application.Mappings;
 using MovieDatabase.Application.Services;
 using MovieDatabase.Infrastructure.Data;
 using MovieDatabase.Infrastructure.Repositories;
+using Scalar.AspNetCore;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,7 +32,18 @@ builder.Services.AddAutoMapper(options =>
     options.AddProfile<MappingProfile>();
 });
 
+builder.Services.AddOpenApi();
+
 var app = builder.Build();
+
+app.UseHttpsRedirection();
+
+// konfig HTTP pipeline
+app.MapOpenApi();
+app.MapScalarApiReference(options =>
+{
+    
+});
 
 app.MapControllers();
 

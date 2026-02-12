@@ -76,4 +76,55 @@ public class PersonService(IUnitOfWork unitOfWork, IMapper mapper) : IPersonServ
 
         return mapper.Map<PersonResponse>(entity);
     }
+
+    public async Task<PersonResponse> GetByIdAsync(int id, CancellationToken ct = default)
+    {
+        var entity = await unitOfWork.PersonRepository.GetWithMoviesAsync(id, ct);
+
+        if (entity is null) return null;
+
+        return mapper.Map<PersonResponse>(entity);
+    }
+
+    public async Task<PersonResponse> UpdateAsync(int id, CreatePersonRequest dto, CancellationToken ct = default)
+    {
+        var entity = await unitOfWork.PersonRepository.GetWithMoviesAsync(id, ct);
+
+        if (entity is null) return null;
+
+        mapper.Map(dto, entity);
+
+        entity.MoviesAsActor.Clear();
+        if (dto.MoviesAsActor.Count > 0)
+        {
+            var movies = await unitOfWork.MoviRepository.GetQueryable()
+                .Where(m => dto.MoviesAsActor.Contains(m.Id))
+                .ToListAsync(ct);
+            foreach (var movie in movies)
+                entity.MoviesAsActor.Add(movie);
+        }
+
+        entity.MoviesAsActor.Clear();
+        if (dto.MoviesAsDirector.Count > 0)
+        {
+            var movies = await unitOfWork.MoviRepository.GetQueryable()
+                .Where(m => dto.MoviesAsDirector.Contains(m.Id))
+                .ToListAsync(ct);
+            foreach (var movie in movies)
+                entity.MoviesAsDirector.Add(movie);
+        }
+        await unitOfWork.CommitAsync(ct);
+
+        return mapper.Map<PersonResponse>(entity);
+    }
+
+    public async Task DeleteAsync(int id, CancellationToken ct = default)
+    {
+        var entity = await unitOfWork.PersonRepository.GetByIdAsync(id, ct);
+        if (entity == null) 
+            throw new KeyNotFoundException($"Person with id {id} not found");
+
+        unitOfWork.PersonRepository.Delete(entity);
+        await unitOfWork.CommitAsync(ct);
+    }
 }

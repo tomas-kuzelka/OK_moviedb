@@ -13,4 +13,10 @@ public interface IPersonService
     Task <PersonResponse> CreateAsync(CreatePersonRequest dto, CancellationToken ct = default);
 
     Task<PageResult<PersonResponse>> GetAllAsync(int pageNumber = 1, int pageSize = 10, CancellationToken ct = default);
+    Task<PersonResponse> UpdateAsync(int id, CreatePersonRequest dto, CancellationToken ct = default);
+    Task<PersonResponse> GetByIdAsync(int id, CancellationToken ct = default);
+
+    Task DeleteAsync(int id, CancellationToken ct = default);
+
+
 }
