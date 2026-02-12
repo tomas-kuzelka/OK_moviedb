@@ -15,6 +15,6 @@ public class Movie
     // public DateOnly DateAdded { get; set; } - Shadow Property
     public int? DirectorId { get; set; }
     public Person? Director { get; set; }
-    public ICollection<Person> Actors { get; set; } = [];
-    public ICollection<Genre> Genres { get; set; } = [];
+    public List<Person> Actors { get; set; } = [];
+    public List<Genre> Genres { get; set; } = [];
 }

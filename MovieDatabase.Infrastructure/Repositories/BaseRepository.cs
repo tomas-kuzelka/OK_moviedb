@@ -54,7 +54,7 @@ public abstract class BaseRepository<T, TKey> : IBaseRepository<T, TKey> where T
 
     public IQueryable<T> GetQueryable()
     {
-        return _dbSet.AsNoTracking().AsQueryable();
+        return _dbSet.AsQueryable();
     }
 
 }

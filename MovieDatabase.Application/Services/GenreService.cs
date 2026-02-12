@@ -53,6 +53,11 @@ public class GenreService(IUnitOfWork unitOfWork, IMapper mapper) : IGenreServic
         await unitOfWork.GenreRepository.AddAsync(entity, ct);
         await unitOfWork.CommitAsync(ct);
 
+        var createdEntity = await unitOfWork.GenreRepository.GetWithMoviesAsync(entity.Id, ct);
+
+        if (createdEntity == null)
+            throw new InvalidOperationException("Failed to retrieve created movie");
+
         return mapper.Map<GenreResponse>(entity);
 
     }

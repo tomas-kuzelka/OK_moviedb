@@ -46,7 +46,7 @@ public class MovieService(IUnitOfWork unitOfWork, IMapper mapper) : IMovieServic
             var actors = await unitOfWork.PersonRepository.GetQueryable()
                 .Where(p => dto.ActorIds.Contains(p.Id))
                 .ToListAsync(ct);
-            entity.Actors = actors;
+            entity.Actors.AddRange(actors);
         }
 
         // načtení a přiřazení žánrů (Genres)
@@ -55,11 +55,16 @@ public class MovieService(IUnitOfWork unitOfWork, IMapper mapper) : IMovieServic
             var genres = await unitOfWork.GenreRepository.GetQueryable()
                 .Where(g => dto.GenreIds.Contains(g.Id))
                 .ToListAsync(ct);
-            entity.Genres = genres;
+            entity.Genres.AddRange(genres);
         }
 
         await unitOfWork.MovieRepository.AddAsync(entity, ct);
         await unitOfWork.CommitAsync(ct);
+
+        var createdEntity = await unitOfWork.MovieRepository.GetWithDetailsAsync(entity.Id, ct);
+
+        if (createdEntity == null)
+            throw new InvalidOperationException("Failed to retrieve created movie");
 
         return mapper.Map<MovieResponse>(entity);
     }

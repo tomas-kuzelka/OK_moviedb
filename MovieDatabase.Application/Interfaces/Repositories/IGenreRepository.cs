@@ -7,4 +7,7 @@ namespace MovieDatabase.Application.Interfaces.Repositories;
 
 public interface IGenreRepository : IBaseRepository<Genre, int>
 {
+
+    Task<Genre?> GetWithMoviesAsync(int id, CancellationToken
+         ct = default);
 }

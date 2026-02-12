@@ -7,4 +7,8 @@ namespace MovieDatabase.Application.Interfaces.Repositories;
 
 public interface IMovieRepository : IBaseRepository<Movie, int>
 {
+
+    Task<Movie?> GetWithDetailsAsync(int id, CancellationToken ct = default);
 }
+
+

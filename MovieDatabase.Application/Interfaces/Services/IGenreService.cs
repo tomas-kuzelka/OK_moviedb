@@ -1,6 +1,7 @@
 ﻿using MovieDatabase.Application.DTOs.Common;
 using MovieDatabase.Application.DTOs.Genre;
 using MovieDatabase.Application.DTOs.Movie;
+using MovieDatabase.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,4 +16,6 @@ public interface IGenreService
     Task<GenreResponse> GetByIdAsync(int id, CancellationToken ct = default);
 
     Task DeleteAsync(int id, CancellationToken ct = default);
+
+    
 }
