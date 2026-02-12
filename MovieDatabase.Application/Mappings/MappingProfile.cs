@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using MovieDatabase.Application.DTOs.Movie;
 using MovieDatabase.Application.DTOs.Person;
 using MovieDatabase.Domain.Entities;
 using System;
@@ -23,6 +24,8 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.MoviesAsDirector, opt => opt.Ignore());
 
         CreateMap<Address, AddressDTO>().ReverseMap();
+
+        CreateMap<Movie, MovieSummaryDTO>().ReverseMap();
 
     }
 }
