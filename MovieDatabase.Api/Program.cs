@@ -20,6 +20,8 @@ builder.Services.AddScoped<IMovieRepository, MovieRepository>();
 builder.Services.AddScoped<IPersonRepository, PersonRepository>();
 builder.Services.AddScoped<IGenreRepository, GenreRepository>();
 builder.Services.AddScoped<IPersonService, PersonService>();
+builder.Services.AddScoped<IGenreService, GenreService>();
+builder.Services.AddScoped<IMovieService, MovieService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddControllers().AddJsonOptions(options =>

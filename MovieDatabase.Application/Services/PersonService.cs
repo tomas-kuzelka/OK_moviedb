@@ -56,7 +56,7 @@ public class PersonService(IUnitOfWork unitOfWork, IMapper mapper) : IPersonServ
         // namapovat filmy (Actors)
         if (dto.MoviesAsActor.Count > 0)
         {
-            var movies = await unitOfWork.MoviRepository.GetQueryable()
+            var movies = await unitOfWork.MovieRepository.GetQueryable()
                 .Where(m => dto.MoviesAsActor.Contains(m.Id))
                 .ToListAsync(ct);
             entity.MoviesAsActor = movies;
@@ -65,7 +65,7 @@ public class PersonService(IUnitOfWork unitOfWork, IMapper mapper) : IPersonServ
         // namapovat filmy (Directors)
         if (dto.MoviesAsDirector.Count > 0)
         {
-            var movies = await unitOfWork.MoviRepository.GetQueryable()
+            var movies = await unitOfWork.MovieRepository.GetQueryable()
                 .Where(m => dto.MoviesAsDirector.Contains(m.Id))
                 .ToListAsync(ct);
             entity.MoviesAsDirector = movies;
@@ -98,7 +98,7 @@ public class PersonService(IUnitOfWork unitOfWork, IMapper mapper) : IPersonServ
         entity.MoviesAsActor.Clear();
         if (dto.MoviesAsActor.Count > 0)
         {
-            var movies = await unitOfWork.MoviRepository.GetQueryable()
+            var movies = await unitOfWork.MovieRepository.GetQueryable()
                 .Where(m => dto.MoviesAsActor.Contains(m.Id))
                 .ToListAsync(ct);
             foreach (var movie in movies)
@@ -108,7 +108,7 @@ public class PersonService(IUnitOfWork unitOfWork, IMapper mapper) : IPersonServ
         entity.MoviesAsActor.Clear();
         if (dto.MoviesAsDirector.Count > 0)
         {
-            var movies = await unitOfWork.MoviRepository.GetQueryable()
+            var movies = await unitOfWork.MovieRepository.GetQueryable()
                 .Where(m => dto.MoviesAsDirector.Contains(m.Id))
                 .ToListAsync(ct);
             foreach (var movie in movies)
