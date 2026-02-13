@@ -7,7 +7,7 @@ using System.Text;
 
 namespace MovieDatabase.Application.DTOs.Person;
 
-public record CreatePersonRequest
+public record CreatePersonRequest // : IValidatableObject
 {
     [Display(Name = "Jméno")]
     [Required(ErrorMessage = "{0} je povinné.")]

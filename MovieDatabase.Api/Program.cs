@@ -24,6 +24,18 @@ builder.Services.AddScoped<IGenreService, GenreService>();
 builder.Services.AddScoped<IMovieService, MovieService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReact",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:5173/")
+            .AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+        });
+});
+
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
@@ -36,9 +48,12 @@ builder.Services.AddAutoMapper(options =>
 
 builder.Services.AddOpenApi();
 
+
 var app = builder.Build();
 
+
 app.UseHttpsRedirection();
+app.UseCors("AllowReact");
 
 // konfig HTTP pipeline
 app.MapOpenApi();

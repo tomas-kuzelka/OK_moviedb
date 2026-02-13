@@ -7,9 +7,9 @@ namespace MovieDatabase.Application.DTOs.Person;
 
 public record AddressDTO
 (
-    string? Street,
-    string? City,
-    string? Zip
+    string Street,
+    string City,
+    string Zip
 );
 
 
